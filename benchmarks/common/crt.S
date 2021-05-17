@@ -48,8 +48,6 @@ _start:
   li  x31,0
 
   # enable FPU and accelerator if present
-  li t0, MSTATUS_FS | MSTATUS_XS
-  csrs mstatus, t0
 
   # make sure XLEN agrees with compilation choice
   li t0, 1
@@ -171,15 +169,11 @@ trap_entry:
   SREG x30, 30*REGBYTES(sp)
   SREG x31, 31*REGBYTES(sp)
 
-  csrr a0, mcause
-  csrr a1, mepc
   mv a2, sp
   jal handle_trap
-  csrw mepc, a0
 
   # Remain in M-mode after eret
   li t0, MSTATUS_MPP
-  csrs mstatus, t0
 
   LREG x1, 1*REGBYTES(sp)
   LREG x2, 2*REGBYTES(sp)
@@ -214,7 +208,6 @@ trap_entry:
   LREG x31, 31*REGBYTES(sp)
 
   addi sp, sp, 272
-  mret
 
 .section ".tohost","aw",@progbits
 .align 6
