@@ -4,7 +4,7 @@
 # Yunsup Lee (yunsup@cs.berkeley.edu)
 #
 
-XLEN ?= 32
+XLEN ?= 64
 
 default: all
 
@@ -37,18 +37,18 @@ bmarks = \
 
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
-RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin -fno-builtin-printf -fno-tree-loop-distribute-patterns
-RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/aquila_common/test.ld $(incs)
-RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/aquila_common/test.ld
+RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -fno-tree-loop-distribute-patterns
+RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/common/test.ld $(incs)
+RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/common/test.ld
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.text.init --section=.data
 RISCV_SIM ?= spike --isa=rv$(XLEN)gc
 
-incs  += -I$(src_dir)/../env -I$(src_dir)/aquila_common $(addprefix -I$(src_dir)/, $(bmarks))
+incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(bmarks))
 objs  :=
 
 define compile_template
-$(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*) boot
-	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -o $$@ $(wildcard $(src_dir)/$(1)/*.c) $(filter-out $(src_dir)/aquila_common/boot.c , $(wildcard $(src_dir)/aquila_common/*.c)) $(wildcard $(src_dir)/aquila_common/*.S) $$(RISCV_LINK_OPTS)
+$(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
+	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -o $$@ $(wildcard $(src_dir)/$(1)/*.c) $(wildcard $(src_dir)/common/*.c) $(wildcard $(src_dir)/common/*.S) $$(RISCV_LINK_OPTS)
 endef
 
 $(foreach bmark,$(bmarks),$(eval $(call compile_template,$(bmark))))
@@ -62,9 +62,6 @@ bmarks_riscv_out  = $(addsuffix .riscv.out,  $(bmarks))
 
 $(bmarks_riscv_dump): %.riscv.dump: %.riscv
 	$(RISCV_OBJDUMP) $< > $@
-
-boot:
-	$(RISCV_GCC) $(incs) $(RISCV_GCC_OPTS) -c aquila_common/boot.c
 
 $(bmarks_riscv_out): %.riscv.out: %.riscv
 	$(RISCV_SIM) $< > $@

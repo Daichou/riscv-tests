@@ -17,24 +17,28 @@
 // Input/Reference Data
 
 #include "dataset1.h"
+#include <stdio.h>
 
 //--------------------------------------------------------------------------
 // Main
 
 int main( int argc, char* argv[] )
 {
-  int results_data[DATA_SIZE];
+    int results_data[DATA_SIZE];
+    printf("Median benchmark\n");
+//#if PREALLOCATE
+    printf("Median benchmark preallocate...\n");
+    // If needed we preallocate everything in the caches
+    median( DATA_SIZE, input_data, results_data );
+//#endif
+    printf("Median benchmark start\n");
 
-#if PREALLOCATE
-  // If needed we preallocate everything in the caches
-  median( DATA_SIZE, input_data, results_data );
-#endif
+    // Do the filter
+    setStats(1);
+    median( DATA_SIZE, input_data, results_data );
+    setStats(0);
 
-  // Do the filter
-  setStats(1);
-  median( DATA_SIZE, input_data, results_data );
-  setStats(0);
-
-  // Check the results
-  return verify( DATA_SIZE, results_data, verify_data );
+    printf("Median benchmark preallocate...\n");
+    // Check the results
+    return verify( DATA_SIZE, results_data, verify_data );
 }

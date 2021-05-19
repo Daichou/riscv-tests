@@ -2,10 +2,13 @@
 
 #ifndef _MM_H
 #define _MM_H
-
+#undef _WCHAR_T_DEFINED
+#undef _WINT_T_DEFINED
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
+
+#define SP
 
 #ifdef SP
 typedef float t;

@@ -1,5 +1,6 @@
 // See LICENSE for license details.
-
+#undef _WCHAR_T_DEFINED
+#undef _WINT_T_DEFINED
 #include "common.h"
 #include <assert.h>
 #include <math.h>

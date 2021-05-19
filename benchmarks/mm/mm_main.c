@@ -1,5 +1,4 @@
 // See LICENSE for license details.
-
 #include "common.h"
 #include <assert.h>
 #include <stdlib.h>
